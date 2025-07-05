@@ -17,6 +17,8 @@
   <meta name="application-name" content="AdultSpin">
   <meta name="msapplication-TileImage" content="./img/1.svg">
   <meta name="msapplication-square150x150logo" content="./img/1.svg">
+  <meta name="apple-touch-icon" content="./img/1.svg">
+  <meta name="apple-touch-icon-precomposed" content="./img/1.svg">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -485,8 +487,20 @@
       e.preventDefault();
       deferredPrompt = e;
       
-      // Let the browser show its native install prompt
-      // Don't interfere with the automatic prompt
+      // Show install prompt after user interaction
+      setTimeout(() => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            } else {
+              console.log('User dismissed the install prompt');
+            }
+            deferredPrompt = null;
+          });
+        }
+      }, 2000);
     });
     
     // Track successful installation
@@ -517,6 +531,18 @@
         navigator.serviceWorker.ready.then((registration) => {
           console.log('Service Worker ready:', registration);
           console.log('Service Worker state:', registration.active ? registration.active.state : 'No active SW');
+          
+          // Check if install criteria are met
+          if (registration.active) {
+            console.log('Service Worker is active');
+            // Force check for install prompt
+            setTimeout(() => {
+              if (deferredPrompt) {
+                console.log('Install prompt available, showing...');
+                deferredPrompt.prompt();
+              }
+            }, 3000);
+          }
         });
       }
     });
