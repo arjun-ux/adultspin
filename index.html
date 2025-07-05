@@ -19,9 +19,6 @@
   <meta name="msapplication-square150x150logo" content="./icon.svg">
   <meta name="apple-touch-icon" content="./icon.svg">
   <meta name="apple-touch-icon-precomposed" content="./icon.svg">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -284,6 +281,8 @@
     </div>
   </div>
 
+  <!-- Debug Script -->
+  <script src="./debug.js"></script>
   <!-- <script src="game.js"></script> -->
   <script>
     // Jawaban yang diterima (bisa angka atau "600 ribu")
@@ -305,44 +304,72 @@
       }
     }
     // Modal logic
-    document.getElementById('modal-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const input = document.getElementById('answer').value.trim();
-      const age = parseInt(document.getElementById('age').value, 10);
-      const normInput = normalize(input);
-      const normAccepted = acceptedAnswers.map(normalize);
-      let errorMsg = '';
-      if (isNaN(age) || age < 1) {
-        errorMsg = 'Umur harus diisi dengan benar.';
-      } else if (age < 21) {
-        errorMsg = 'Maaf, Anda belum cukup umur untuk mengakses game.';
-      } else if (!normAccepted.includes(normInput)) {
-        errorMsg = 'Jawaban salah. Silakan coba lagi!';
-      }
-      if (errorMsg) {
-        document.getElementById('modal-error').textContent = errorMsg;
-        if (errorMsg.startsWith('Jawaban')) {
-          document.getElementById('answer').value = '';
-          document.getElementById('answer').focus();
-        } else if (errorMsg.startsWith('Maaf')) {
-          document.getElementById('age').focus();
+    const modalForm = document.getElementById('modal-form');
+    if (modalForm) {
+      modalForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        try {
+          const input = document.getElementById('answer').value.trim();
+          const age = parseInt(document.getElementById('age').value, 10);
+          const normInput = normalize(input);
+          const normAccepted = acceptedAnswers.map(normalize);
+          let errorMsg = '';
+          if (isNaN(age) || age < 1) {
+            errorMsg = 'Umur harus diisi dengan benar.';
+          } else if (age < 21) {
+            errorMsg = 'Maaf, Anda belum cukup umur untuk mengakses game.';
+          } else if (!normAccepted.includes(normInput)) {
+            errorMsg = 'Jawaban salah. Silakan coba lagi!';
+          }
+          if (errorMsg) {
+            const modalError = document.getElementById('modal-error');
+            if (modalError) {
+              modalError.textContent = errorMsg;
+            }
+            if (errorMsg.startsWith('Jawaban')) {
+              const answerInput = document.getElementById('answer');
+              if (answerInput) {
+                answerInput.value = '';
+                answerInput.focus();
+              }
+            } else if (errorMsg.startsWith('Maaf')) {
+              const ageInput = document.getElementById('age');
+              if (ageInput) {
+                ageInput.focus();
+              }
+            }
+          } else {
+            const modalBackdrop = document.getElementById('modal-backdrop');
+            if (modalBackdrop) {
+              modalBackdrop.style.display = 'none';
+            }
+            showSpin(true);
+          }
+        } catch (error) {
+          console.error('Error in modal form submission:', error);
         }
-      } else {
-        document.getElementById('modal-backdrop').style.display = 'none';
-        showSpin(true);
-      }
-    });
+      });
+    }
     // Inisialisasi: spin disembunyikan saat modal aktif
     showSpin(false);
     // Cegah close modal dengan ESC atau klik luar
-    document.getElementById('modal-backdrop').addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
-    document.querySelector('.modal-box').addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalBox = document.querySelector('.modal-box');
+    
+    if (modalBackdrop) {
+      modalBackdrop.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    }
+    
+    if (modalBox) {
+      modalBox.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    }
     document.addEventListener('keydown', function(e) {
-      if (document.getElementById('modal-backdrop').style.display !== 'none') {
+      const modalBackdrop = document.getElementById('modal-backdrop');
+      if (modalBackdrop && modalBackdrop.style.display !== 'none') {
         if (e.key === 'Escape') {
           e.preventDefault();
         }
@@ -396,7 +423,7 @@
         const ix = cx + iconR * Math.cos(iconAngle) - iconSize/2;
         const iy = cy + iconR * Math.sin(iconAngle) - iconSize/2;
         const iconDeg = (iconAngle * 180 / Math.PI);
-        svg += `<image href="${SVG_PATHS[i]}" x="${ix}" y="${iy}" width="${iconSize}" height="${iconSize}" transform="rotate(${iconDeg - 90} ${ix + iconSize/2} ${iy + iconSize/2})" preserveAspectRatio="xMidYMid meet" style="transform: translateZ(0);" />`;
+        svg += `<image href="${SVG_PATHS[i]}" x="${ix}" y="${iy}" width="${iconSize}" height="${iconSize}" transform="rotate(${iconDeg - 90} ${ix + iconSize/2} ${iy + iconSize/2})" preserveAspectRatio="xMidYMid meet" style="transform: translateZ(0);" onerror="this.style.display='none';" />`;
         // Nomor pada sektor
         const numberAngle = iconAngle;
         const numberR = r * 0.4;
@@ -416,45 +443,50 @@
     spinWheel.style.transform = 'rotate(0deg)';
     
     spinWheel.addEventListener('click', function() {
-      if (spinning) return;
-      spinning = true;
-      
-      const winner = Math.floor(Math.random() * NUM_SECTORS);
-      const anglePer = 360 / NUM_SECTORS;
-      // Sudut agar sektor pemenang tepat di atas pointer (jam 12)
-      const targetAngle = (winner * anglePer) - 90;
-      
-      // Tambahkan beberapa putaran penuh agar animasi dramatis
-      const extraSpins = 8 * 360; // 8 putaran penuh untuk putaran pertama
-      
-      // Untuk putaran pertama, pastikan ada putaran penuh yang dramatis
-      let finalRotation;
-      if (isFirstSpin) {
-        // Putaran pertama: mulai dari 0, tambah putaran penuh yang lebih banyak
-        const firstSpinExtra = extraSpins + (Math.random() * 720); // Tambah 0-720 derajat random
-        finalRotation = firstSpinExtra + targetAngle;
-        isFirstSpin = false;
+      try {
+        if (spinning) return;
+        spinning = true;
         
-        // Gunakan class khusus untuk putaran pertama
-        spinWheel.classList.add('first-spin');
-        spinWheel.style.transform = `rotate(${finalRotation}deg)`;
-      } else {
-        // Putaran selanjutnya: lanjutkan dari posisi sebelumnya dengan putaran yang lebih sedikit
-        const subsequentSpins = 5 * 360; // 5 putaran untuk putaran selanjutnya
-        finalRotation = currentRotation + subsequentSpins + targetAngle;
+        const winner = Math.floor(Math.random() * NUM_SECTORS);
+        const anglePer = 360 / NUM_SECTORS;
+        // Sudut agar sektor pemenang tepat di atas pointer (jam 12)
+        const targetAngle = (winner * anglePer) - 90;
         
-        // Gunakan easing function yang lebih smooth untuk ending
-        spinWheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        spinWheel.style.transform = `rotate(${finalRotation}deg)`;
-      }
-      
-      // Update currentRotation setelah animasi selesai
-      setTimeout(() => {
-        currentRotation = finalRotation;
-        spinWheel.style.transition = '';
-        spinWheel.classList.remove('first-spin');
+        // Tambahkan beberapa putaran penuh agar animasi dramatis
+        const extraSpins = 8 * 360; // 8 putaran penuh untuk putaran pertama
+        
+        // Untuk putaran pertama, pastikan ada putaran penuh yang dramatis
+        let finalRotation;
+        if (isFirstSpin) {
+          // Putaran pertama: mulai dari 0, tambah putaran penuh yang lebih banyak
+          const firstSpinExtra = extraSpins + (Math.random() * 720); // Tambah 0-720 derajat random
+          finalRotation = firstSpinExtra + targetAngle;
+          isFirstSpin = false;
+          
+          // Gunakan class khusus untuk putaran pertama
+          spinWheel.classList.add('first-spin');
+          spinWheel.style.transform = `rotate(${finalRotation}deg)`;
+        } else {
+          // Putaran selanjutnya: lanjutkan dari posisi sebelumnya dengan putaran yang lebih sedikit
+          const subsequentSpins = 5 * 360; // 5 putaran untuk putaran selanjutnya
+          finalRotation = currentRotation + subsequentSpins + targetAngle;
+          
+          // Gunakan easing function yang lebih smooth untuk ending
+          spinWheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          spinWheel.style.transform = `rotate(${finalRotation}deg)`;
+        }
+        
+        // Update currentRotation setelah animasi selesai
+        setTimeout(() => {
+          currentRotation = finalRotation;
+          spinWheel.style.transition = '';
+          spinWheel.classList.remove('first-spin');
+          spinning = false;
+        }, 5000);
+      } catch (error) {
+        console.error('Error in spin wheel click:', error);
         spinning = false;
-      }, 5000);
+      }
     });
     
     // PWA Service Worker Registration
@@ -468,6 +500,8 @@
             console.error('SW registration failed:', registrationError);
           });
       });
+    } else {
+      console.log('Service Worker not supported');
     }
     
     // PWA Install Prompt
@@ -486,20 +520,25 @@
     });
     
     // Install button click handler
-    document.getElementById('installBtn').addEventListener('click', () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-          } else {
-            console.log('User dismissed the install prompt');
-          }
-          deferredPrompt = null;
-          document.getElementById('installBtn').style.display = 'none';
-        });
-      }
-    });
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+      installBtn.addEventListener('click', () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            } else {
+              console.log('User dismissed the install prompt');
+            }
+            deferredPrompt = null;
+            if (installBtn) {
+              installBtn.style.display = 'none';
+            }
+          });
+        }
+      });
+    }
     
     // Track successful installation
     window.addEventListener('appinstalled', (e) => {
@@ -524,27 +563,31 @@
     
     // PWA Network Status
     function updateOnlineStatus() {
-      const status = document.createElement('div');
-      status.id = 'network-status';
-      status.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: ${navigator.onLine ? '#4CAF50' : '#f44336'};
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 12px;
-        z-index: 1000;
-        display: ${navigator.onLine ? 'none' : 'block'};
-      `;
-      status.textContent = navigator.onLine ? 'Online' : 'Offline - App masih bisa digunakan';
-      
-      const existingStatus = document.getElementById('network-status');
-      if (existingStatus) {
-        existingStatus.remove();
+      try {
+        const status = document.createElement('div');
+        status.id = 'network-status';
+        status.style.cssText = `
+          position: fixed;
+          top: 20px;
+          left: 20px;
+          background: ${navigator.onLine ? '#4CAF50' : '#f44336'};
+          color: white;
+          padding: 8px 16px;
+          border-radius: 20px;
+          font-size: 12px;
+          z-index: 1000;
+          display: ${navigator.onLine ? 'none' : 'block'};
+        `;
+        status.textContent = navigator.onLine ? 'Online' : 'Offline - App masih bisa digunakan';
+        
+        const existingStatus = document.getElementById('network-status');
+        if (existingStatus) {
+          existingStatus.remove();
+        }
+        document.body.appendChild(status);
+      } catch (error) {
+        console.error('Error updating network status:', error);
       }
-      document.body.appendChild(status);
     }
     
     window.addEventListener('online', updateOnlineStatus);

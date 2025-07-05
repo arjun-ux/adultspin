@@ -36,6 +36,11 @@ self.addEventListener('install', (event) => {
 
 // Fetch event - serve from cache if available
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -52,6 +57,13 @@ self.addEventListener('fetch', (event) => {
             });
           }
           return response;
+        }).catch((error) => {
+          console.error('Fetch failed:', error);
+          // Return a fallback response for navigation requests
+          if (event.request.destination === 'document') {
+            return caches.match('./index.html');
+          }
+          return new Response('Network error', { status: 408 });
         });
       })
   );
