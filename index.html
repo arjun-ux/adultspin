@@ -15,6 +15,8 @@
   <meta name="msapplication-config" content="./browserconfig.xml">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="application-name" content="AdultSpin">
+  <meta name="msapplication-TileImage" content="./img/1.svg">
+  <meta name="msapplication-square150x150logo" content="./img/1.svg">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -450,63 +452,23 @@
       });
     }
     
-    // PWA Install Prompt
+    // PWA Install Prompt - Let browser handle it automatically
     let deferredPrompt;
-    const installButton = document.createElement('button');
-    installButton.textContent = '📱 Install App';
-    installButton.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #f672b5;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 20px;
-      font-size: 14px;
-      cursor: pointer;
-      z-index: 1000;
-      display: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      font-weight: bold;
-    `;
     
     window.addEventListener('beforeinstallprompt', (e) => {
-      console.log('Install prompt triggered');
+      console.log('Install prompt triggered automatically by browser');
       e.preventDefault();
       deferredPrompt = e;
-      installButton.style.display = 'block';
       
-      installButton.addEventListener('click', () => {
-        console.log('Install button clicked');
-        installButton.style.display = 'none';
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-          } else {
-            console.log('User dismissed the install prompt');
-          }
-          deferredPrompt = null;
-        });
-      });
+      // Let the browser show its native install prompt
+      // Don't interfere with the automatic prompt
     });
     
-    // Fallback: Show install button after user interaction if criteria are met
-    setTimeout(() => {
-      if (!deferredPrompt && window.location.protocol === 'https:' && 'serviceWorker' in navigator) {
-        console.log('Showing fallback install button');
-        installButton.style.display = 'block';
-        installButton.textContent = '📱 Add to Home Screen';
-        installButton.onclick = () => {
-          // Show manual install instructions
-          alert('Untuk menginstall aplikasi:\n\nChrome/Edge: Klik icon + di address bar\nAndroid: Menu > Add to Home Screen\niOS: Share > Add to Home Screen');
-        };
-      }
-    }, 3000);
-    
-    // Add install button to body
-    document.body.appendChild(installButton);
+    // Track successful installation
+    window.addEventListener('appinstalled', (e) => {
+      console.log('PWA was successfully installed');
+      deferredPrompt = null;
+    });
     
     // Debug: Check if PWA criteria are met
     window.addEventListener('load', () => {
