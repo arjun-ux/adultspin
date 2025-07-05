@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdultSpin</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="Game spinner interaktif dengan 9 sektor berwarna-warni">
+  <meta name="theme-color" content="#a18cd1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="AdultSpin">
+  <meta name="msapplication-TileColor" content="#a18cd1">
+  <meta name="msapplication-config" content="/browserconfig.xml">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #f8a1d1 0%, #a18cd1 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .spin-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+    }
+    .spin-wheel {
+      width: min(90vw, 90vh, 480px);
+      height: min(90vw, 90vh, 480px);
+      max-width: 480px;
+      max-height: 480px;
+      min-width: 220px;
+      min-height: 220px;
+      border-radius: 50%;
+      box-shadow: 0 8px 32px 0 #e1bee7, 0 0 0 8px #fff3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: box-shadow 0.2s;
+      margin-bottom: 24px;
+      user-select: none;
+      background: transparent;
+      overflow: visible;
+      /* Hardware acceleration untuk animasi yang lebih smooth */
+      transform: translateZ(0) rotate(0deg);
+      will-change: transform;
+      backface-visibility: hidden;
+    }
+    .spin-wheel:active {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 8px #fff3;
+    }
+    .spin-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(44vw, 44vh, 220px);
+      height: min(44vw, 44vh, 220px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      z-index: 4;
+      user-select: none;
+      background: none;
+      box-shadow: none;
+      pointer-events: none;
+      /* efek glow lembut */
+      filter: drop-shadow(0 0 16px #f8a1d1aa) drop-shadow(0 0 32px #a18cd1aa);
+    }
+    .spin-label {
+      font-size: 2.8em;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 2px 16px #f8a1d1, 0 2px 24px #a18cd1, 0 2px 8px #000a;
+      letter-spacing: 2px;
+      pointer-events: none;
+      user-select: none;
+      margin-top: 10px;
+    }
+    .spin-pointer {
+      width: 44px;
+      height: 60px;
+      margin-bottom: -12px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 5;
+      pointer-events: none;
+      /* efek glow pointer */
+      filter: drop-shadow(0 0 8px #f8a1d1) drop-shadow(0 0 16px #a18cd1);
+    }
+    @media (max-width: 600px) {
+      .spin-wheel {
+        min-width: 140px;
+        min-height: 140px;
+      }
+      .spin-label {
+        font-size: 1.3em;
+      }
+    }
+    .spinning {
+      animation: spin 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      80% { transform: rotate(2880deg); }
+      100% { transform: rotate(2880deg); }
+    }
+    
+    /* Optimasi untuk putaran pertama */
+    .spin-wheel.first-spin {
+      transition: transform 5s cubic-bezier(0.1, 0.7, 0.1, 1) !important;
+    }
+    /* Sembunyikan spin-container jika modal aktif */
+    #main-content.hide {
+      display: none !important;
+    }
+    /* Modal Styles - improved */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+    .modal-box {
+      background: linear-gradient(135deg, #fff0fa 0%, #f3e6ff 100%);
+      color: #7c3aad;
+      border-radius: 18px;
+      padding: 36px 28px 28px 28px;
+      max-width: 95vw;
+      width: 370px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.10);
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      animation: modalPop 0.4s cubic-bezier(.25,1.7,.5,1.25);
+    }
+    @keyframes modalPop {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .modal-box h2 {
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 1.3em;
+    }
+    .modal-box label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-align: left;
+    }
+    .modal-box input[type="text"], .modal-box input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      font-size: 1em;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+    .modal-box button[type="submit"] {
+      background: #f672b5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 8px;
+    }
+    .modal-box button[type="submit"]:hover {
+      background: #a18cd1;
+    }
+    .modal-error {
+      color: #d32f2f;
+      margin-bottom: 10px;
+      font-size: 0.98em;
+      min-height: 1.2em;
+    }
+    @media (max-width: 500px) {
+      .modal-box {
+        width: 98vw;
+        padding: 20px 6vw 18px 6vw;
+      }
+    }
+    /* Penunjuk hasil spin */
+    @media (max-width: 600px) {
+      .spin-pointer {
+        top: calc(50% - min(35vw, 35vh, 90px) - 24px);
+      }
+    }
+    
+    /* Optimasi animasi untuk SVG elements */
+    #wheelSVG path,
+    #wheelSVG image,
+    #wheelSVG text {
+      transform: translateZ(0);
+      will-change: transform;
+    }
+  </style>
+</head>
+<body>
+  <div class="spin-container hide" id="main-content">
+    <div class="spin-center" style="background: none; box-shadow: none; width: min(44vw, 44vh, 220px); height: min(44vw, 44vh, 220px);">
+      <div class="spin-pointer">
+        <svg width="44" height="110" viewBox="0 0 44 110">
+          <ellipse cx="22" cy="102" rx="14" ry="8" fill="#222"/>
+          <rect x="17" y="28" width="10" height="70" fill="#222" rx="5"/>
+          <polygon points="22,0 40,36 4,36" fill="#222"/>
+        </svg>
+      </div>
+      <span class="spin-label" style="font-size:2.8em; color:#fff; text-shadow:0 2px 8px #000a;">SPIN</span>
+    </div>
+    <div class="spin-wheel" id="spinWheel">
+      <svg id="wheelSVG" width="100%" height="100%" viewBox="0 0 1000 1000" style="display:block; transform: translateZ(0); will-change: transform;">
+        <!-- Sektor dan label akan diisi oleh JS -->
+      </svg>
+    </div>
+    <p>Klik lingkaran untuk memutar!</p>
+  </div>
+
+  <!-- Modal Alert -->
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal-box">
+      <h2>Jawab Pertanyaan Berikut</h2>
+      <form id="modal-form" autocomplete="off">
+        <label for="answer">Berapa biaya menikah di KUA Indonesia saat ini?</label>
+        <input type="text" id="answer" name="answer" placeholder="Masukkan jawaban..." autofocus required />
+        <label for="age">Berapa umur Anda?</label>
+        <input type="number" id="age" name="age" placeholder="Masukkan umur..." min="1" max="120" required />
+        <div class="modal-error" id="modal-error"></div>
+        <button type="submit">Kirim Jawaban</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- <script src="game.js"></script> -->
+  <script>
+    // Jawaban yang diterima (bisa angka atau "600 ribu")
+    const acceptedAnswers = [
+      '600000', '600.000', '600 ribu', '600rb', '600 ribu rupiah', 'enam ratus ribu', '600.000 rupiah', '600000 rupiah', '600 k', '600k', '600', 'rp600000', 'rp 600000', 'rp600.000', 'rp 600.000', 'rp 600 ribu', 'rp600 ribu'
+    ];
+    function normalize(str) {
+      return str.toLowerCase().replace(/\s+/g, '').replace(/\./g, '').replace(/rp/g, '').replace(/k/g, '000').replace(/rb/g, '000').replace(/ribu/g, '000');
+    }
+    // Sembunyikan spin saat modal aktif
+    function showSpin(show) {
+      const mainContent = document.getElementById('main-content');
+      if (show) {
+        mainContent.classList.remove('hide');
+        mainContent.style.filter = '';
+      } else {
+        mainContent.classList.add('hide');
+        mainContent.style.filter = '';
+      }
+    }
+    // Modal logic
+    document.getElementById('modal-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const input = document.getElementById('answer').value.trim();
+      const age = parseInt(document.getElementById('age').value, 10);
+      const normInput = normalize(input);
+      const normAccepted = acceptedAnswers.map(normalize);
+      let errorMsg = '';
+      if (isNaN(age) || age < 1) {
+        errorMsg = 'Umur harus diisi dengan benar.';
+      } else if (age < 21) {
+        errorMsg = 'Maaf, Anda belum cukup umur untuk mengakses game.';
+      } else if (!normAccepted.includes(normInput)) {
+        errorMsg = 'Jawaban salah. Silakan coba lagi!';
+      }
+      if (errorMsg) {
+        document.getElementById('modal-error').textContent = errorMsg;
+        if (errorMsg.startsWith('Jawaban')) {
+          document.getElementById('answer').value = '';
+          document.getElementById('answer').focus();
+        } else if (errorMsg.startsWith('Maaf')) {
+          document.getElementById('age').focus();
+        }
+      } else {
+        document.getElementById('modal-backdrop').style.display = 'none';
+        showSpin(true);
+      }
+    });
+    // Inisialisasi: spin disembunyikan saat modal aktif
+    showSpin(false);
+    // Cegah close modal dengan ESC atau klik luar
+    document.getElementById('modal-backdrop').addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+    document.querySelector('.modal-box').addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (document.getElementById('modal-backdrop').style.display !== 'none') {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+        }
+      }
+    });
+
+    // SPIN WHEEL LOGIC
+    const spinWheel = document.getElementById('spinWheel');
+    const wheelSVG = document.getElementById('wheelSVG');
+    const NUM_SECTORS = 9;
+    const SECTOR_COLORS = [
+      '#f8a1d1', // pink
+      '#a18cd1', // ungu
+      '#fcb1e3', // pink muda
+      '#c084fc', // ungu muda
+      '#f672b5', // pink terang
+      '#b388ff', // ungu terang
+      '#ffb6b9', // pink pastel
+      '#e1bee7', // ungu pastel
+      '#f7c1e3'  // pink soft
+    ];
+    const SVG_PATHS = [
+      'img/1.svg',
+      'img/2.svg',
+      'img/3.svg',
+      'img/4.svg',
+      'img/5.svg',
+      'img/6.svg',
+      'img/7.svg',
+      'img/8.svg',
+      'img/9.svg'
+    ];
+    // Buat sektor dan label
+    function drawWheel() {
+      const cx = 500, cy = 500, r = 480;
+      const anglePer = 2 * Math.PI / NUM_SECTORS;
+      let svg = '';
+      for (let i = 0; i < NUM_SECTORS; i++) {
+        const startAngle = i * anglePer - Math.PI/2;
+        const endAngle = (i+1) * anglePer - Math.PI/2;
+        const x1 = cx + r * Math.cos(startAngle);
+        const y1 = cy + r * Math.sin(startAngle);
+        const x2 = cx + r * Math.cos(endAngle);
+        const y2 = cy + r * Math.sin(endAngle);
+        const largeArc = anglePer > Math.PI ? 1 : 0;
+        svg += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 0,1 ${x2},${y2} Z" fill="${SECTOR_COLORS[i % SECTOR_COLORS.length]}" style="transform: translateZ(0);" />`;
+        // Posisi ikon SVG
+        const iconAngle = startAngle + anglePer/2;
+        const iconR = r * 0.75;
+        const iconSize = 130; // lebih besar
+        const ix = cx + iconR * Math.cos(iconAngle) - iconSize/2;
+        const iy = cy + iconR * Math.sin(iconAngle) - iconSize/2;
+        const iconDeg = (iconAngle * 180 / Math.PI);
+        svg += `<image href="${SVG_PATHS[i]}" x="${ix}" y="${iy}" width="${iconSize}" height="${iconSize}" transform="rotate(${iconDeg - 90} ${ix + iconSize/2} ${iy + iconSize/2})" preserveAspectRatio="xMidYMid meet" style="transform: translateZ(0);" />`;
+        // Nomor pada sektor
+        const numberAngle = iconAngle;
+        const numberR = r * 0.4;
+        const nx = cx + numberR * Math.cos(numberAngle);
+        const ny = cy + numberR * Math.sin(numberAngle) + 36;
+        svg += `<text x="${nx}" y="${ny}" text-anchor="middle" font-size="64" font-family="Arial" fill="#fff" font-weight="bold" stroke="#a18cd1" stroke-width="8" paint-order="stroke" style="transform: translateZ(0);">${i+1}</text>`;
+      }
+      wheelSVG.innerHTML = svg;    
+    }
+    drawWheel();
+
+    let spinning = false;
+    let currentRotation = 0;
+    let isFirstSpin = true;
+    
+    // Inisialisasi posisi awal spinner
+    spinWheel.style.transform = 'rotate(0deg)';
+    
+    spinWheel.addEventListener('click', function() {
+      if (spinning) return;
+      spinning = true;
+      
+      const winner = Math.floor(Math.random() * NUM_SECTORS);
+      const anglePer = 360 / NUM_SECTORS;
+      // Sudut agar sektor pemenang tepat di atas pointer (jam 12)
+      const targetAngle = (winner * anglePer) - 90;
+      
+      // Tambahkan beberapa putaran penuh agar animasi dramatis
+      const extraSpins = 8 * 360; // 8 putaran penuh untuk putaran pertama
+      
+      // Untuk putaran pertama, pastikan ada putaran penuh yang dramatis
+      let finalRotation;
+      if (isFirstSpin) {
+        // Putaran pertama: mulai dari 0, tambah putaran penuh yang lebih banyak
+        const firstSpinExtra = extraSpins + (Math.random() * 720); // Tambah 0-720 derajat random
+        finalRotation = firstSpinExtra + targetAngle;
+        isFirstSpin = false;
+        
+        // Gunakan class khusus untuk putaran pertama
+        spinWheel.classList.add('first-spin');
+        spinWheel.style.transform = `rotate(${finalRotation}deg)`;
+      } else {
+        // Putaran selanjutnya: lanjutkan dari posisi sebelumnya dengan putaran yang lebih sedikit
+        const subsequentSpins = 5 * 360; // 5 putaran untuk putaran selanjutnya
+        finalRotation = currentRotation + subsequentSpins + targetAngle;
+        
+        // Gunakan easing function yang lebih smooth untuk ending
+        spinWheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        spinWheel.style.transform = `rotate(${finalRotation}deg)`;
+      }
+      
+      // Update currentRotation setelah animasi selesai
+      setTimeout(() => {
+        currentRotation = finalRotation;
+        spinWheel.style.transition = '';
+        spinWheel.classList.remove('first-spin');
+        spinning = false;
+      }, 5000);
+    });
+    
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered: ', registration);
+          })
+          .catch((registrationError) => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+    
+    // PWA Install Prompt
+    let deferredPrompt;
+    const installButton = document.createElement('button');
+    installButton.textContent = 'Install App';
+    installButton.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #f672b5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installButton.style.display = 'block';
+      
+      installButton.addEventListener('click', () => {
+        installButton.style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+        });
+      });
+    });
+    
+    // Add install button to body
+    document.body.appendChild(installButton);
+    
+    // PWA Network Status
+    function updateOnlineStatus() {
+      const status = document.createElement('div');
+      status.id = 'network-status';
+      status.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: ${navigator.onLine ? '#4CAF50' : '#f44336'};
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        z-index: 1000;
+        display: ${navigator.onLine ? 'none' : 'block'};
+      `;
+      status.textContent = navigator.onLine ? 'Online' : 'Offline - App masih bisa digunakan';
+      
+      const existingStatus = document.getElementById('network-status');
+      if (existingStatus) {
+        existingStatus.remove();
+      }
+      document.body.appendChild(status);
+    }
+    
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+  </script>
+</body>
+</html>
