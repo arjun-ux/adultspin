@@ -1,17 +1,17 @@
 const CACHE_NAME = 'adultspin-v1.0.0';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/img/1.svg',
-  '/img/2.svg',
-  '/img/3.svg',
-  '/img/4.svg',
-  '/img/5.svg',
-  '/img/6.svg',
-  '/img/7.svg',
-  '/img/8.svg',
-  '/img/9.svg'
+  './',
+  './index.html',
+  './manifest.json',
+  './img/1.svg',
+  './img/2.svg',
+  './img/3.svg',
+  './img/4.svg',
+  './img/5.svg',
+  './img/6.svg',
+  './img/7.svg',
+  './img/8.svg',
+  './img/9.svg'
 ];
 
 // Install event - cache resources
@@ -69,8 +69,8 @@ function doBackgroundSync() {
 self.addEventListener('push', (event) => {
   const options = {
     body: 'Spin the wheel and see what you get!',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: './icons/icon-192x192.png',
+    badge: './icons/icon-72x72.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -80,12 +80,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'explore',
         title: 'Play Now',
-        icon: '/icons/icon-72x72.png'
+        icon: './icons/icon-72x72.png'
       },
       {
         action: 'close',
         title: 'Close',
-        icon: '/icons/icon-72x72.png'
+        icon: './icons/icon-72x72.png'
       }
     ]
   };
@@ -101,7 +101,7 @@ self.addEventListener('notificationclick', (event) => {
 
   if (event.action === 'explore') {
     event.waitUntil(
-      clients.openWindow('/')
+      clients.openWindow('./')
     );
   }
 }); 

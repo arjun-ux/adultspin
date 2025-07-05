@@ -82,6 +82,19 @@ AdultSpin sekarang mendukung PWA dengan fitur:
    - Tab "Application" > "Manifest"
    - Tab "Application" > "Service Workers"
 
+### **GitHub Pages Setup:**
+1. **Upload semua file** ke repository GitHub
+2. **Enable GitHub Pages** di Settings > Pages
+3. **Source**: Deploy from a branch (main/master)
+4. **Pastikan file `.nojekyll`** ada di root folder
+5. **Tunggu beberapa menit** untuk deployment
+
+### **Troubleshooting GitHub Pages:**
+- **Manifest tidak load**: Pastikan path menggunakan `./` bukan `/`
+- **Service Worker error**: Cek console untuk error details
+- **Icons tidak muncul**: Generate dan upload icons ke folder `icons/`
+- **404 errors**: File `404.html` akan handle missing pages
+
 ### **Install PWA:**
 - **Chrome/Edge**: Klik icon install di address bar
 - **Android**: "Add to Home Screen" dari menu browser

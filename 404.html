@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - AdultSpin</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8a1d1 0%, #a18cd1 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 40px 20px;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 16px #f8a1d1;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .btn {
+            background: #f672b5;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .btn:hover {
+            background: #a18cd1;
+        }
+        .spinner {
+            width: 100px;
+            height: 100px;
+            border: 8px solid rgba(255,255,255,0.3);
+            border-top: 8px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <h1>404</h1>
+        <p>Oops! Halaman yang Anda cari tidak ditemukan.</p>
+        <p>Mari kembali ke game AdultSpin yang seru!</p>
+        <a href="./" class="btn">Kembali ke Game</a>
+    </div>
+    
+    <script>
+        // Auto redirect after 5 seconds
+        setTimeout(() => {
+            window.location.href = './';
+        }, 5000);
+    </script>
+</body>
+</html> 
