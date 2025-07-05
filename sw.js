@@ -1,10 +1,9 @@
-const CACHE_NAME = 'adultspin-v1.0.1';
+const CACHE_NAME = 'adultspin-v1.0.3';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './browserconfig.xml',
-  './img/logo.png',
+  './icon.svg',
   './img/1.svg',
   './img/2.svg',
   './img/3.svg',
