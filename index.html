@@ -12,7 +12,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="AdultSpin">
   <meta name="msapplication-TileColor" content="#a18cd1">
-  <meta name="msapplication-config" content="/browserconfig.xml">
+  <meta name="msapplication-config" content="./browserconfig.xml">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="AdultSpin">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
@@ -451,7 +453,7 @@
     // PWA Install Prompt
     let deferredPrompt;
     const installButton = document.createElement('button');
-    installButton.textContent = 'Install App';
+    installButton.textContent = '📱 Install App';
     installButton.style.cssText = `
       position: fixed;
       top: 20px;
@@ -466,14 +468,17 @@
       z-index: 1000;
       display: none;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      font-weight: bold;
     `;
     
     window.addEventListener('beforeinstallprompt', (e) => {
+      console.log('Install prompt triggered');
       e.preventDefault();
       deferredPrompt = e;
       installButton.style.display = 'block';
       
       installButton.addEventListener('click', () => {
+        console.log('Install button clicked');
         installButton.style.display = 'none';
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
@@ -489,6 +494,14 @@
     
     // Add install button to body
     document.body.appendChild(installButton);
+    
+    // Debug: Check if PWA criteria are met
+    window.addEventListener('load', () => {
+      console.log('Checking PWA criteria...');
+      console.log('HTTPS:', window.location.protocol === 'https:');
+      console.log('Service Worker:', 'serviceWorker' in navigator);
+      console.log('Manifest:', document.querySelector('link[rel="manifest"]'));
+    });
     
     // PWA Network Status
     function updateOnlineStatus() {
