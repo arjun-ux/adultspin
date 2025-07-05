@@ -6,7 +6,9 @@
   "display": "standalone",
   "background_color": "#f8a1d1",
   "theme_color": "#a18cd1",
+  "orientation": "portrait",
   "scope": "./",
+  "lang": "id",
   "icons": [
     {
       "src": "./icon.svg",
@@ -38,5 +40,7 @@
       "type": "image/svg+xml",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "categories": ["games", "entertainment"],
+  "prefer_related_applications": false
 } 
