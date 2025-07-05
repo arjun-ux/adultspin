@@ -45,13 +45,13 @@ AdultSpin adalah game spinner interaktif yang dirancang dengan antarmuka yang me
    ├── manifest.json           # PWA manifest
    ├── sw.js                   # Service Worker
    ├── browserconfig.xml       # Windows tile config
-   ├── generate-icons.html     # Icon generator
+   ├── .nojekyll               # GitHub Pages config
+   ├── 404.html                # Error page
    ├── img/                    # Folder ikon SVG
    │   ├── 1.svg
    │   ├── 2.svg
    │   ├── ...
    │   └── 9.svg
-   ├── icons/                  # PWA icons (generate dulu)
    └── README.md               # Dokumentasi ini
    ```
 
@@ -68,16 +68,11 @@ AdultSpin sekarang mendukung PWA dengan fitur:
 - ✅ **Responsive Design** - Optimal di semua perangkat
 
 ### **Setup PWA:**
-1. **Generate Icons**:
-   - Buka `generate-icons.html` di browser
-   - Klik "Download All Icons"
-   - Pindahkan semua icon ke folder `icons/`
-
-2. **Deploy ke HTTPS**:
+1. **Deploy ke HTTPS**:
    - PWA membutuhkan HTTPS untuk berfungsi
    - Gunakan Netlify, Vercel, atau hosting dengan SSL
 
-3. **Test PWA**:
+2. **Test PWA**:
    - Buka Chrome DevTools
    - Tab "Application" > "Manifest"
    - Tab "Application" > "Service Workers"
@@ -92,7 +87,6 @@ AdultSpin sekarang mendukung PWA dengan fitur:
 ### **Troubleshooting GitHub Pages:**
 - **Manifest tidak load**: Pastikan path menggunakan `./` bukan `/`
 - **Service Worker error**: Cek console untuk error details
-- **Icons tidak muncul**: Generate dan upload icons ke folder `icons/`
 - **404 errors**: File `404.html` akan handle missing pages
 
 ### **Install PWA:**

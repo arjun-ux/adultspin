@@ -69,8 +69,6 @@ function doBackgroundSync() {
 self.addEventListener('push', (event) => {
   const options = {
     body: 'Spin the wheel and see what you get!',
-    icon: './icons/icon-192x192.png',
-    badge: './icons/icon-72x72.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -80,12 +78,7 @@ self.addEventListener('push', (event) => {
       {
         action: 'explore',
         title: 'Play Now',
-        icon: './icons/icon-72x72.png'
-      },
-      {
-        action: 'close',
-        title: 'Close',
-        icon: './icons/icon-72x72.png'
+
       }
     ]
   };
