@@ -35,6 +35,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      /* Hapus efek tap highlight global */
+      -webkit-tap-highlight-color: transparent;
     }
     .spin-container {
       display: flex;
@@ -57,7 +59,7 @@
       justify-content: center;
       cursor: pointer;
       position: relative;
-      transition: box-shadow 0.2s;
+      transition: all 0.2s ease;
       margin-bottom: 24px;
       user-select: none;
       background: transparent;
@@ -66,62 +68,53 @@
       transform: translateZ(0) rotate(0deg);
       will-change: transform;
       backface-visibility: hidden;
+      /* Hapus efek outline dan kilatan default */
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .spin-wheel:hover {
+      box-shadow: 0 12px 40px 0 #e1bee7, 0 0 0 8px #fff3;
+      transform: translateZ(0) rotate(0deg) scale(1.02);
     }
     .spin-wheel:active {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 8px #fff3;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 0 8px #fff3;
+      transform: translateZ(0) rotate(0deg) scale(0.95);
+      transition: all 0.1s ease-out;
     }
-    .spin-center {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: min(44vw, 44vh, 220px);
-      height: min(44vw, 44vh, 220px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      z-index: 4;
-      user-select: none;
-      background: none;
-      box-shadow: none;
-      pointer-events: none;
-      /* efek glow lembut */
-      filter: drop-shadow(0 0 16px #f8a1d1aa) drop-shadow(0 0 32px #a18cd1aa);
+    .spin-wheel:focus {
+      outline: none;
     }
-    .spin-label {
-      font-size: 2.8em;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 0 2px 16px #f8a1d1, 0 2px 24px #a18cd1, 0 2px 8px #000a;
-      letter-spacing: 2px;
-      pointer-events: none;
-      user-select: none;
-      margin-top: 10px;
-    }
+
+
     .spin-pointer {
       width: 44px;
-      height: 45px;
-      margin-bottom: -8px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      height: 80px;
       z-index: 5;
       pointer-events: none;
       /* efek glow pointer */
       filter: drop-shadow(0 0 8px #f8a1d1) drop-shadow(0 0 16px #a18cd1);
+      /* Posisi tepat di tengah wheel tapi tidak ikut berputar */
+      position: absolute;
+      top: 39%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
     @media (max-width: 600px) {
       .spin-wheel {
         min-width: 140px;
         min-height: 140px;
       }
-      .spin-label {
-        font-size: 1.3em;
-      }
     }
     .spinning {
       animation: spin 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) 1;
+      cursor: not-allowed;
+      opacity: 0.9;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -215,12 +208,7 @@
         padding: 20px 6vw 18px 6vw;
       }
     }
-    /* Penunjuk hasil spin */
-    @media (max-width: 600px) {
-      .spin-pointer {
-        top: calc(50% - min(35vw, 35vh, 90px) - 18px);
-      }
-    }
+
     
     /* Optimasi animasi untuk SVG elements */
     #wheelSVG path,
@@ -232,20 +220,17 @@
   </style>
 </head>
 <body>
-  <div class="spin-container hide" id="main-content">
-    <div class="spin-center" style="background: none; box-shadow: none; width: min(44vw, 44vh, 220px); height: min(44vw, 44vh, 220px);">
-      <div class="spin-pointer">
-        <svg width="44" height="80" viewBox="0 0 44 80">
-          <ellipse cx="22" cy="72" rx="14" ry="8" fill="#222"/>
-          <rect x="17" y="20" width="10" height="50" fill="#222" rx="5"/>
-          <polygon points="22,0 40,26 4,26" fill="#222"/>
-        </svg>
-      </div>
-      <span class="spin-label" style="font-size:2.8em; color:#fff; text-shadow:0 2px 8px #000a;">SPIN</span>
-    </div>
+      <div class="spin-container hide" id="main-content">
     <div class="spin-wheel" id="spinWheel">
       <svg id="wheelSVG" width="100%" height="100%" viewBox="0 0 1000 1000" style="display:block; transform: translateZ(0); will-change: transform;">
         <!-- Sektor dan label akan diisi oleh JS -->
+      </svg>
+    </div>
+    <div class="spin-pointer">
+      <svg width="44" height="80" viewBox="0 0 44 80">
+        <ellipse cx="22" cy="72" rx="14" ry="8" fill="#222"/>
+        <rect x="17" y="20" width="10" height="50" fill="#222" rx="5"/>
+        <polygon points="22,0 40,26 4,26" fill="#222"/>
       </svg>
     </div>
     <p>Klik lingkaran untuk memutar!</p>
