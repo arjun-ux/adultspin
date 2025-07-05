@@ -492,6 +492,19 @@
       });
     });
     
+    // Fallback: Show install button after user interaction if criteria are met
+    setTimeout(() => {
+      if (!deferredPrompt && window.location.protocol === 'https:' && 'serviceWorker' in navigator) {
+        console.log('Showing fallback install button');
+        installButton.style.display = 'block';
+        installButton.textContent = '📱 Add to Home Screen';
+        installButton.onclick = () => {
+          // Show manual install instructions
+          alert('Untuk menginstall aplikasi:\n\nChrome/Edge: Klik icon + di address bar\nAndroid: Menu > Add to Home Screen\niOS: Share > Add to Home Screen');
+        };
+      }
+    }, 3000);
+    
     // Add install button to body
     document.body.appendChild(installButton);
     
@@ -501,7 +514,23 @@
       console.log('HTTPS:', window.location.protocol === 'https:');
       console.log('Service Worker:', 'serviceWorker' in navigator);
       console.log('Manifest:', document.querySelector('link[rel="manifest"]'));
+      
+      // Check if already installed
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('App is already installed as PWA');
+      } else {
+        console.log('App is running in browser mode');
+      }
+      
+      // Check if user has interacted with the site
+      console.log('User has interacted:', document.body.classList.contains('user-interacted'));
     });
+    
+    // Track user interaction
+    document.addEventListener('click', () => {
+      document.body.classList.add('user-interacted');
+      console.log('User interaction detected');
+    }, { once: true });
     
     // PWA Network Status
     function updateOnlineStatus() {
