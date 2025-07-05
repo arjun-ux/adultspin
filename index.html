@@ -442,14 +442,30 @@
     // PWA Service Worker Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then((registration) => {
-            console.log('SW registered: ', registration);
-          })
-          .catch((registrationError) => {
-            console.log('SW registration failed: ', registrationError);
+        navigator.serviceWorker.register('./sw.js', {
+          scope: './'
+        })
+        .then((registration) => {
+          console.log('SW registered successfully:', registration);
+          
+          // Check if update is available
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            console.log('Service Worker update found:', newWorker);
+            
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('New service worker installed');
+              }
+            });
           });
+        })
+        .catch((registrationError) => {
+          console.error('SW registration failed:', registrationError);
+        });
       });
+    } else {
+      console.log('Service Worker not supported');
     }
     
     // PWA Install Prompt - Let browser handle it automatically
@@ -486,6 +502,14 @@
       
       // Check if user has interacted with the site
       console.log('User has interacted:', document.body.classList.contains('user-interacted'));
+      
+      // Check service worker status
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then((registration) => {
+          console.log('Service Worker ready:', registration);
+          console.log('Service Worker state:', registration.active ? registration.active.state : 'No active SW');
+        });
+      }
     });
     
     // Track user interaction

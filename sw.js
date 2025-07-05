@@ -1,8 +1,9 @@
-const CACHE_NAME = 'adultspin-v1.0.0';
+const CACHE_NAME = 'adultspin-v1.0.1';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
+  './browserconfig.xml',
   './img/1.svg',
   './img/2.svg',
   './img/3.svg',
@@ -16,11 +17,19 @@ const urlsToCache = [
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
+  console.log('Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
+        console.log('Opened cache:', CACHE_NAME);
         return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        console.log('All resources cached successfully');
+        return self.skipWaiting();
+      })
+      .catch((error) => {
+        console.error('Cache failed:', error);
       })
   );
 });
@@ -50,6 +59,7 @@ self.addEventListener('fetch', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('Service Worker activating...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -60,6 +70,9 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
+    }).then(() => {
+      console.log('Service Worker activated successfully');
+      return self.clients.claim();
     })
   );
 });
