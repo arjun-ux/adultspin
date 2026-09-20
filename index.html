@@ -1,599 +1,98 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AdultSpin</title>
-  
-  <!-- PWA Meta Tags -->
-  <meta name="description" content="Game spinner interaktif dengan 9 sektor berwarna-warni">
-  <meta name="theme-color" content="#a18cd1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="AdultSpin">
-  <meta name="msapplication-TileColor" content="#a18cd1">
-  <meta name="msapplication-config" content="./browserconfig.xml">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="AdultSpin">
-  <meta name="msapplication-TileImage" content="img/icon-192x192.png">
-  <meta name="msapplication-square150x150logo" content="img/icon-192x192.png">
-  <meta name="apple-touch-icon" content="img/icon-192x192.png">
-  <meta name="apple-touch-icon-precomposed" content="img/icon-192x192.png">
-  
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="./manifest.json">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="192x192" href="img/icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="img/icon-512x512.png">
-  <link rel="shortcut icon" type="image/png" href="img/icon-192x192.png">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #f8a1d1 0%, #a18cd1 100%);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      /* Hapus efek tap highlight global */
-      -webkit-tap-highlight-color: transparent;
-    }
-    .spin-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 60vh;
-    }
-    .wheel-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 24px;
-    }
-    .spin-wheel {
-      width: min(90vw, 90vh, 480px);
-      height: min(90vw, 90vh, 480px);
-      max-width: 480px;
-      max-height: 480px;
-      min-width: 220px;
-      min-height: 220px;
-      border-radius: 50%;
-      box-shadow: 0 8px 32px 0 #e1bee7, 0 0 0 8px #fff3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.2s ease;
-      user-select: none;
-      background: transparent;
-      overflow: visible;
-      /* Hardware acceleration untuk animasi yang lebih smooth */
-      transform: translateZ(0) rotate(0deg);
-      will-change: transform;
-      backface-visibility: hidden;
-      /* Hapus efek outline dan kilatan default */
-      outline: none;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -khtml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-    .spin-wheel:hover {
-      box-shadow: 0 12px 40px 0 #e1bee7, 0 0 0 8px #fff3;
-      transform: translateZ(0) rotate(0deg) scale(1.02);
-    }
-    .spin-wheel:active {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.8), 0 0 0 8px #fff3;
-      transform: translateZ(0) rotate(0deg) scale(0.95);
-      transition: all 0.1s ease-out;
-    }
-    .spin-wheel:focus {
-      outline: none;
-    }
-
-
-    .spin-pointer {
-      width: 100px;
-      height: 100px;
-      z-index: 5;
-      pointer-events: none;
-      /* efek glow pointer */
-      filter: drop-shadow(0 0 8px #f8a1d1) drop-shadow(0 0 16px #a18cd1);
-      /* Posisi tepat di tengah wheel tapi tidak ikut berputar */
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .pointer-svg {
-      width: 100%;
-      height: 100%;
-    }
-    /* Memastikan pointer tidak ikut berputar */
-    .spin-pointer {
-      transform: translate(-50%, -50%) !important;
-    }
-    @media (max-width: 600px) {
-      .spin-wheel {
-        min-width: 140px;
-        min-height: 140px;
-      }
-      .spin-pointer {
-        width: 80px;
-        height: 80px;
-        top: 50%;
-      }
-    }
-    .spinning {
-      animation: spin 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) 1;
-      cursor: not-allowed;
-      opacity: 0.9;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      80% { transform: rotate(2880deg); }
-      100% { transform: rotate(2880deg); }
-    }
-    
-    /* Optimasi untuk putaran pertama */
-    .spin-wheel.first-spin {
-      transition: transform 5s cubic-bezier(0.1, 0.7, 0.1, 1) !important;
-    }
-    /* Sembunyikan spin-container jika modal aktif */
-    #main-content.hide {
-      display: none !important;
-    }
-    /* Modal Styles - improved */
-    .modal-backdrop {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.7);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.3s;
-    }
-    .modal-box {
-      background: linear-gradient(135deg, #fff0fa 0%, #f3e6ff 100%);
-      color: #7c3aad;
-      border-radius: 18px;
-      padding: 36px 28px 28px 28px;
-      max-width: 95vw;
-      width: 370px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.10);
-      text-align: center;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      animation: modalPop 0.4s cubic-bezier(.25,1.7,.5,1.25);
-    }
-    @keyframes modalPop {
-      0% { transform: scale(0.7); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .modal-box h2 {
-      margin-top: 0;
-      margin-bottom: 18px;
-      font-size: 1.3em;
-    }
-    .modal-box label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-      text-align: left;
-    }
-    .modal-box input[type="text"], .modal-box input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #bbb;
-      font-size: 1em;
-      margin-bottom: 16px;
-      box-sizing: border-box;
-    }
-    .modal-box button[type="submit"] {
-      background: #f672b5;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 24px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 8px;
-    }
-    .modal-box button[type="submit"]:hover {
-      background: #a18cd1;
-    }
-    .modal-error {
-      color: #d32f2f;
-      margin-bottom: 10px;
-      font-size: 0.98em;
-      min-height: 1.2em;
-    }
-    @media (max-width: 500px) {
-      .modal-box {
-        width: 98vw;
-        padding: 20px 6vw 18px 6vw;
-      }
-    }
-
-    
-    /* Optimasi animasi untuk SVG elements */
-    #wheelSVG path,
-    #wheelSVG image,
-    #wheelSVG text {
-      transform: translateZ(0);
-      will-change: transform;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemberitahuan Migrasi Sistem</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+        .banner-container {
+            background: #ffffff;
+            border-top: 6px solid #0056b3;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .badge {
+            background-color: #e1ecf4;
+            color: #0056b3;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333333;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        p {
+            color: #666666;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .old-name {
+            text-decoration: line-through;
+            color: #999999;
+        }
+        .new-name {
+            color: #0056b3;
+            font-weight: bold;
+        }
+        .btn-link {
+            display: inline-block;
+            background-color: #0056b3;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .btn-link:hover {
+            background-color: #004085;
+        }
+        .note {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #999999;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
-      <div class="spin-container hide" id="main-content">
-    <div class="wheel-wrapper">
-      <div class="spin-wheel" id="spinWheel">
-        <svg id="wheelSVG" width="100%" height="100%" viewBox="0 0 1000 1000" style="display:block; transform: translateZ(0); will-change: transform;">
-          <!-- Sektor dan label akan diisi oleh JS -->
-        </svg>
-      </div>
-      <div class="spin-pointer">
-        <svg class="pointer-svg" viewBox="0 0 100 100">
-          <!-- Titik pusat -->
-          <circle cx="50" cy="50" r="32" fill="#222"/>
-          <!-- Jarum jam yang benar - menunjuk ke atas dengan jarak dari pusat -->
-          <polygon points="0,-45 -25,-20 25,-20"
-          transform="translate(50,50)"
-          fill="#222"/>
-        </svg>
-      </div>
+
+    <div class="banner-container">
+        <span class="badge">Pengumuman Penting</span>
+        <h1>Sistem Telah Bermigrasi</h1>
+        <p>
+            Informasi untuk seluruh pengguna, layanan sistem <span class="old-name">ShmAnalisyt</span> kini resmi berubah nama menjadi <span class="new-name">ANStock</span>. 
+            Tahap uji coba di server lokal (laptop pribadi) telah selesai. Silakan kunjungi tautan resmi di bawah ini untuk mengakses sistem yang baru.
+        </p>
+        <a href="#" class="btn-link">Kunjungi ANStock Sekarang</a>
+        <p class="note">*Silakan perbarui bookmark browser Anda jika diperlukan.</p>
     </div>
-    <p>Klik lingkaran untuk memutar!</p>
-    <button id="installBtn" style="display: none; margin-top: 20px; padding: 10px 20px; background: #f672b5; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">
-      Install App
-    </button>
-  </div>
 
-  <!-- Modal Alert -->
-  <div class="modal-backdrop" id="modal-backdrop">
-    <div class="modal-box">
-      <h2>Jawab Pertanyaan Berikut</h2>
-      <form id="modal-form" autocomplete="off">
-        <label for="answer">Berapa biaya menikah di KUA Indonesia saat ini?</label>
-        <input type="text" id="answer" name="answer" placeholder="Masukkan jawaban..." autofocus required />
-        <label for="age">Berapa umur Anda?</label>
-        <input type="number" id="age" name="age" placeholder="Masukkan umur..." min="1" max="120" required />
-        <div class="modal-error" id="modal-error"></div>
-        <button type="submit">Kirim Jawaban</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Debug Script -->
-  <script src="./debug.js"></script>
-  <!-- <script src="game.js"></script> -->
-  <script>
-    // Jawaban yang diterima (bisa angka atau "600 ribu")
-    const acceptedAnswers = [
-      '600000', '600.000', '600 ribu', '600rb', '600 ribu rupiah', 'enam ratus ribu', '600.000 rupiah', '600000 rupiah', '600 k', '600k', '600', 'rp600000', 'rp 600000', 'rp600.000', 'rp 600.000', 'rp 600 ribu', 'rp600 ribu'
-    ];
-    function normalize(str) {
-      return str.toLowerCase().replace(/\s+/g, '').replace(/\./g, '').replace(/rp/g, '').replace(/k/g, '000').replace(/rb/g, '000').replace(/ribu/g, '000');
-    }
-    // Sembunyikan spin saat modal aktif
-    function showSpin(show) {
-      const mainContent = document.getElementById('main-content');
-      if (show) {
-        mainContent.classList.remove('hide');
-        mainContent.style.filter = '';
-      } else {
-        mainContent.classList.add('hide');
-        mainContent.style.filter = '';
-      }
-    }
-    // Modal logic
-    const modalForm = document.getElementById('modal-form');
-    if (modalForm) {
-      modalForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        try {
-          const input = document.getElementById('answer').value.trim();
-          const age = parseInt(document.getElementById('age').value, 10);
-          const normInput = normalize(input);
-          const normAccepted = acceptedAnswers.map(normalize);
-          let errorMsg = '';
-          if (isNaN(age) || age < 1) {
-            errorMsg = 'Umur harus diisi dengan benar.';
-          } else if (age < 21) {
-            errorMsg = 'Maaf, Anda belum cukup umur untuk mengakses game.';
-          } else if (!normAccepted.includes(normInput)) {
-            errorMsg = 'Jawaban salah. Silakan coba lagi!';
-          }
-          if (errorMsg) {
-            const modalError = document.getElementById('modal-error');
-            if (modalError) {
-              modalError.textContent = errorMsg;
-            }
-            if (errorMsg.startsWith('Jawaban')) {
-              const answerInput = document.getElementById('answer');
-              if (answerInput) {
-                answerInput.value = '';
-                answerInput.focus();
-              }
-            } else if (errorMsg.startsWith('Maaf')) {
-              const ageInput = document.getElementById('age');
-              if (ageInput) {
-                ageInput.focus();
-              }
-            }
-          } else {
-            const modalBackdrop = document.getElementById('modal-backdrop');
-            if (modalBackdrop) {
-              modalBackdrop.style.display = 'none';
-            }
-            showSpin(true);
-          }
-        } catch (error) {
-          console.error('Error in modal form submission:', error);
-        }
-      });
-    }
-    // Inisialisasi: spin disembunyikan saat modal aktif
-    showSpin(false);
-    // Cegah close modal dengan ESC atau klik luar
-    const modalBackdrop = document.getElementById('modal-backdrop');
-    const modalBox = document.querySelector('.modal-box');
-    
-    if (modalBackdrop) {
-      modalBackdrop.addEventListener('click', function(e) {
-        e.stopPropagation();
-      });
-    }
-    
-    if (modalBox) {
-      modalBox.addEventListener('click', function(e) {
-        e.stopPropagation();
-      });
-    }
-    document.addEventListener('keydown', function(e) {
-      const modalBackdrop = document.getElementById('modal-backdrop');
-      if (modalBackdrop && modalBackdrop.style.display !== 'none') {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-        }
-      }
-    });
-
-    // SPIN WHEEL LOGIC
-    const spinWheel = document.getElementById('spinWheel');
-    const wheelSVG = document.getElementById('wheelSVG');
-    const NUM_SECTORS = 9;
-    const SECTOR_COLORS = [
-      '#f8a1d1', // pink
-      '#a18cd1', // ungu
-      '#fcb1e3', // pink muda
-      '#c084fc', // ungu muda
-      '#f672b5', // pink terang
-      '#b388ff', // ungu terang
-      '#ffb6b9', // pink pastel
-      '#e1bee7', // ungu pastel
-      '#f7c1e3'  // pink soft
-    ];
-    const SVG_PATHS = [
-      'img/1.svg',
-      'img/2.svg',
-      'img/3.svg',
-      'img/4.svg',
-      'img/5.svg',
-      'img/6.svg',
-      'img/7.svg',
-      'img/8.svg',
-      'img/9.svg'
-    ];
-    // Buat sektor dan label
-    function drawWheel() {
-      const cx = 500, cy = 500, r = 480;
-      const anglePer = 2 * Math.PI / NUM_SECTORS;
-      let svg = '';
-      for (let i = 0; i < NUM_SECTORS; i++) {
-        const startAngle = i * anglePer - Math.PI/2;
-        const endAngle = (i+1) * anglePer - Math.PI/2;
-        const x1 = cx + r * Math.cos(startAngle);
-        const y1 = cy + r * Math.sin(startAngle);
-        const x2 = cx + r * Math.cos(endAngle);
-        const y2 = cy + r * Math.sin(endAngle);
-        const largeArc = anglePer > Math.PI ? 1 : 0;
-        svg += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 0,1 ${x2},${y2} Z" fill="${SECTOR_COLORS[i % SECTOR_COLORS.length]}" style="transform: translateZ(0);" />`;
-        // Posisi ikon SVG
-        const iconAngle = startAngle + anglePer/2;
-        const iconR = r * 0.75;
-        const iconSize = 130; // lebih besar
-        const ix = cx + iconR * Math.cos(iconAngle) - iconSize/2;
-        const iy = cy + iconR * Math.sin(iconAngle) - iconSize/2;
-        const iconDeg = (iconAngle * 180 / Math.PI);
-        svg += `<image href="${SVG_PATHS[i]}" x="${ix}" y="${iy}" width="${iconSize}" height="${iconSize}" transform="rotate(${iconDeg - 90} ${ix + iconSize/2} ${iy + iconSize/2})" preserveAspectRatio="xMidYMid meet" style="transform: translateZ(0);" onerror="this.style.display='none';" />`;
-        // Nomor pada sektor
-        const numberAngle = iconAngle;
-        const numberR = r * 0.4;
-        const nx = cx + numberR * Math.cos(numberAngle);
-        const ny = cy + numberR * Math.sin(numberAngle) + 36;
-        svg += `<text x="${nx}" y="${ny}" text-anchor="middle" font-size="64" font-family="Arial" fill="#fff" font-weight="bold" stroke="#a18cd1" stroke-width="8" paint-order="stroke" style="transform: translateZ(0);">${i+1}</text>`;
-      }
-      wheelSVG.innerHTML = svg;    
-    }
-    drawWheel();
-
-    let spinning = false;
-    let currentRotation = 0;
-    let isFirstSpin = true;
-    
-    // Inisialisasi posisi awal spinner
-    spinWheel.style.transform = 'rotate(0deg)';
-    
-    spinWheel.addEventListener('click', function() {
-      try {
-        if (spinning) return;
-        spinning = true;
-        
-        const winner = Math.floor(Math.random() * NUM_SECTORS);
-        const anglePer = 360 / NUM_SECTORS;
-        // Sudut agar sektor pemenang tepat di atas pointer (jam 12)
-        const targetAngle = (winner * anglePer) - 90;
-        
-        // Tambahkan beberapa putaran penuh agar animasi dramatis
-        const extraSpins = 8 * 360; // 8 putaran penuh untuk putaran pertama
-        
-        // Untuk putaran pertama, pastikan ada putaran penuh yang dramatis
-        let finalRotation;
-        if (isFirstSpin) {
-          // Putaran pertama: mulai dari 0, tambah putaran penuh yang lebih banyak
-          const firstSpinExtra = extraSpins + (Math.random() * 720); // Tambah 0-720 derajat random
-          finalRotation = firstSpinExtra + targetAngle;
-          isFirstSpin = false;
-          
-          // Gunakan class khusus untuk putaran pertama
-          spinWheel.classList.add('first-spin');
-          spinWheel.style.transform = `rotate(${finalRotation}deg)`;
-        } else {
-          // Putaran selanjutnya: lanjutkan dari posisi sebelumnya dengan putaran yang lebih sedikit
-          const subsequentSpins = 5 * 360; // 5 putaran untuk putaran selanjutnya
-          finalRotation = currentRotation + subsequentSpins + targetAngle;
-          
-          // Gunakan easing function yang lebih smooth untuk ending
-          spinWheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-          spinWheel.style.transform = `rotate(${finalRotation}deg)`;
-        }
-        
-        // Update currentRotation setelah animasi selesai
-        setTimeout(() => {
-          currentRotation = finalRotation;
-          spinWheel.style.transition = '';
-          spinWheel.classList.remove('first-spin');
-          spinning = false;
-        }, 5000);
-      } catch (error) {
-        console.error('Error in spin wheel click:', error);
-        spinning = false;
-      }
-    });
-    
-    // PWA Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then((registration) => {
-            console.log('SW registered successfully:', registration);
-          })
-          .catch((registrationError) => {
-            console.error('SW registration failed:', registrationError);
-          });
-      });
-    } else {
-      console.log('Service Worker not supported');
-    }
-    
-    // PWA Install Prompt
-    let deferredPrompt;
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-      console.log('Install prompt available');
-      e.preventDefault();
-      deferredPrompt = e;
-      
-      // Show install button
-      const installBtn = document.getElementById('installBtn');
-      if (installBtn) {
-        installBtn.style.display = 'block';
-      }
-    });
-    
-    // Install button click handler
-    const installBtn = document.getElementById('installBtn');
-    if (installBtn) {
-      installBtn.addEventListener('click', () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              console.log('User accepted the install prompt');
-            } else {
-              console.log('User dismissed the install prompt');
-            }
-            deferredPrompt = null;
-            if (installBtn) {
-              installBtn.style.display = 'none';
-            }
-          });
-        }
-      });
-    }
-    
-    // Track successful installation
-    window.addEventListener('appinstalled', (e) => {
-      console.log('PWA was successfully installed');
-      deferredPrompt = null;
-    });
-    
-    // Debug: Check if PWA criteria are met
-    window.addEventListener('load', () => {
-      console.log('Checking PWA criteria...');
-      console.log('HTTPS:', window.location.protocol === 'https:');
-      console.log('Service Worker:', 'serviceWorker' in navigator);
-      console.log('Manifest:', document.querySelector('link[rel="manifest"]'));
-      
-      // Check if already installed
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('App is already installed as PWA');
-      } else {
-        console.log('App is running in browser mode');
-      }
-    });
-    
-    // PWA Network Status
-    function updateOnlineStatus() {
-      try {
-        const status = document.createElement('div');
-        status.id = 'network-status';
-        status.style.cssText = `
-          position: fixed;
-          top: 20px;
-          left: 20px;
-          background: ${navigator.onLine ? '#4CAF50' : '#f44336'};
-          color: white;
-          padding: 8px 16px;
-          border-radius: 20px;
-          font-size: 12px;
-          z-index: 1000;
-          display: ${navigator.onLine ? 'none' : 'block'};
-        `;
-        status.textContent = navigator.onLine ? 'Online' : 'Offline - App masih bisa digunakan';
-        
-        const existingStatus = document.getElementById('network-status');
-        if (existingStatus) {
-          existingStatus.remove();
-        }
-        document.body.appendChild(status);
-      } catch (error) {
-        console.error('Error updating network status:', error);
-      }
-    }
-    
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus();
-  </script>
 </body>
 </html>
