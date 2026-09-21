@@ -1,98 +1,82 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pemberitahuan Migrasi Sistem</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding: 20px;
-        }
-        .banner-container {
-            background: #ffffff;
-            border-top: 6px solid #0056b3;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px 30px;
-            text-align: center;
-        }
-        .badge {
-            background-color: #e1ecf4;
-            color: #0056b3;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-        h1 {
-            color: #333333;
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-        }
-        p {
-            color: #666666;
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-        .old-name {
-            text-decoration: line-through;
-            color: #999999;
-        }
-        .new-name {
-            color: #0056b3;
-            font-weight: bold;
-        }
-        .btn-link {
-            display: inline-block;
-            background-color: #0056b3;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 12px 30px;
-            border-radius: 5px;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-        .btn-link:hover {
-            background-color: #004085;
-        }
-        .note {
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: #999999;
-            font-style: italic;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="ANStock - platform analisis saham Indonesia.">
+<title>ANStock — Analisis Saham Indonesia</title>
+<style>
+:root{--bg:#f5f7f4;--card:#fff;--ink:#17211b;--muted:#667169;--line:#dfe6e1;--green:#176b4d;--green2:#0e4e38;--soft:#dcece4;--red:#a44b4b;--max:1160px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6}
+a{text-decoration:none;color:inherit}.wrap{width:min(calc(100% - 36px),var(--max));margin:auto}
+header{position:sticky;top:0;z-index:10;background:rgba(245,247,244,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav{height:72px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.03em}.mark{width:35px;height:35px;border-radius:10px;background:var(--green);color:#fff;display:grid;place-items:center}.links{display:flex;gap:27px;color:#56625a;font-size:14px}.links a:hover{color:var(--green)}.navbtn,.primary{background:var(--green);color:#fff;border-radius:10px;padding:11px 17px;font-size:14px;font-weight:700}.navbtn:hover,.primary:hover{background:var(--green2)}
+.hero{padding:88px 0 76px}.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:65px;align-items:center}.eyebrow,.kicker{color:var(--green);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.eyebrow{display:flex;gap:8px;align-items:center;margin-bottom:20px}.eyebrow:before{content:"";width:24px;height:1px;background:var(--green)}
+h1{font-size:clamp(43px,6vw,72px);line-height:1.02;letter-spacing:-.055em;margin:0 0 22px}.lead{font-size:18px;color:var(--muted);max-width:600px;margin:0 0 30px}.actions{display:flex;gap:11px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:10px;font-size:14px;font-weight:700}.secondary{border:1px solid var(--line);background:#fff}.note{font-size:13px;color:#7a847d;margin-top:22px;display:flex;gap:9px;align-items:center}.dot{width:7px;height:7px;border-radius:50%;background:#3d946b}
+.preview{background:#10231a;padding:11px;border-radius:22px;box-shadow:0 24px 65px rgba(24,46,35,.17);transform:rotate(.5deg)}.screen{background:#f8faf8;border-radius:15px;overflow:hidden}.top{height:47px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 16px;font-size:12px}.top small{color:#89928c}.dash{padding:17px}.market{display:flex;justify-content:space-between;align-items:end;margin-bottom:13px}.label{font-size:10px;text-transform:uppercase;color:#7a847d;letter-spacing:.08em}.value{font-size:25px;font-weight:800;letter-spacing:-.04em}.up{color:var(--green)}.down{color:var(--red)}
+.chart{height:150px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:linear-gradient(#eaf4ee,#fff)}.chart svg{width:100%;height:100%}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}.stat,.row{background:#fff;border:1px solid var(--line);border-radius:9px}.stat{padding:10px}.stat small{display:block;color:#7d8780;font-size:9px}.stat strong{font-size:13px}.rows{display:grid;gap:7px;margin-top:9px}.row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:9px 10px;font-size:11px}.row span:nth-child(2),.row span:last-child{text-align:right}.row span:last-child{font-weight:800}
+section{padding:86px 0}.head{max-width:700px;margin-bottom:38px}.kicker{margin-bottom:11px}h2{font-size:clamp(31px,4vw,46px);line-height:1.08;letter-spacing:-.045em;margin:0 0 13px}.head p{color:var(--muted);margin:0}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.feature,.data{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px}.feature{min-height:210px}.num{width:33px;height:33px;background:var(--soft);color:var(--green);border-radius:9px;display:grid;place-items:center;font-size:11px;font-weight:800;margin-bottom:25px}.feature h3,.data h3{font-size:18px;margin:0 0 7px}.feature p,.data p{font-size:14px;color:var(--muted);margin:0}
+.dark{background:#10231a;color:#fff}.dark .kicker{color:#8bc2a8}.dark .head p{color:#aebdb4}.process{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid rgba(255,255,255,.12);border-radius:17px;overflow:hidden}.step{padding:27px 22px;min-height:175px;background:#10231a}.step span{font-size:11px;color:#83ad98;font-weight:800}.step h3{font-size:17px;margin:14px 0 7px}.step p{font-size:13px;color:#aebdb4;margin:0}
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:17px}.tag{font-size:12px;color:#536057;background:#f8faf8;border:1px solid var(--line);padding:5px 9px;border-radius:999px}
+.cta{text-align:center}.cta-box{background:var(--soft);border:1px solid #cde1d6;border-radius:23px;padding:60px 25px}.cta-box h2{max-width:700px;margin:0 auto 13px}.cta-box p{max-width:600px;color:#5d6b62;margin:0 auto 25px}.cta .actions{justify-content:center}
+footer{border-top:1px solid var(--line);padding:27px 0;color:#7a847d;font-size:13px}.foot{display:flex;justify-content:space-between;gap:20px}
+.menu{display:none;background:#fff;border:1px solid var(--line);width:42px;height:42px;border-radius:10px}
+@media(max-width:900px){.links{display:none}.navbtn{display:none}.menu{display:block}.hero-grid{grid-template-columns:1fr;gap:45px}.preview{max-width:700px;margin:auto}.features{grid-template-columns:1fr 1fr}.process{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.wrap{width:calc(100% - 28px)}nav{height:66px}.hero{padding:62px 0 50px}h1{font-size:44px}.lead{font-size:16px}.features,.data-grid,.process{grid-template-columns:1fr}.feature{min-height:0}section{padding:67px 0}.foot{flex-direction:column}.stats{gap:6px}.dash{padding:11px}}
+</style>
 </head>
 <body>
+<header><div class="wrap"><nav>
+<a class="brand" href="#"><span class="mark">A</span><span>ANStock</span></a>
+<div class="links"><a href="#fitur">Fitur</a><a href="#analisis">Analisis</a><a href="#data">Data</a><a href="#tentang">Tentang</a></div>
+<a class="navbtn" href="#fitur">Jelajahi</a><button class="menu" aria-label="Menu"></button>
+</nav></div></header>
 
-    <div class="banner-container">
-        <span class="badge">Pengumuman Penting</span>
-        <h1>Sistem Telah Bermigrasi</h1>
-        <p>
-            Informasi untuk seluruh pengguna, layanan sistem <span class="old-name">ShmAnalisyt</span> kini resmi berubah nama menjadi <span class="new-name">ANStock</span>. 
-            Tahap uji coba di server lokal (laptop pribadi) telah selesai. Silakan kunjungi tautan resmi di bawah ini untuk mengakses sistem yang baru.
-        </p>
-        <a href="#" class="btn-link">Kunjungi ANStock Sekarang</a>
-        <p class="note">*Silakan perbarui bookmark browser Anda jika diperlukan.</p>
-    </div>
+<main>
+<section class="hero" id="tentang"><div class="wrap hero-grid">
+<div><div class="eyebrow">Stock Intelligence Platform</div>
+<h1>Memahami pasar sebelum mengambil keputusan.</h1>
+<p class="lead">ANStock dirancang untuk membantu membaca pasar saham Indonesia secara lebih terstruktur. Dari kondisi IHSG, sektor, fundamental, valuasi, hingga pergerakan harga dan volume.</p>
+<div class="actions"><a class="btn primary" href="#fitur">Lihat Fitur</a><a class="btn secondary" href="#analisis">Cara Kerja</a></div>
+<div class="note"><span class="dot"></span>Sedang dalam pengembangan</div></div>
 
+<div class="preview"><div class="screen"><div class="top"><strong>ANStock</strong><small>Market overview</small></div><div class="dash">
+<div class="market"><div><div class="label">IHSG</div><div class="value">7,284.16</div></div><strong class="up">+0.84%</strong></div>
+<div class="chart"><svg viewBox="0 0 600 180" preserveAspectRatio="none"><path d="M0 145 C55 151 65 122 110 132 S170 106 215 116 S270 82 310 97 S360 55 405 73 S455 52 500 63 S545 27 600 40 L600 180 L0 180Z" fill="#dcece4"></path><path d="M0 145 C55 151 65 122 110 132 S170 106 215 116 S270 82 310 97 S360 55 405 73 S455 52 500 63 S545 27 600 40" fill="none" stroke="#176b4d" stroke-width="3"></path></svg></div>
+<div class="stats"><div class="stat"><small>Breadth</small><strong>412 / 287</strong></div><div class="stat"><small>Volume</small><strong>1.24x</strong></div><div class="stat"><small>Foreign</small><strong class="up">Net Buy</strong></div></div>
+<div class="rows"><div class="row"><strong>BBCA</strong><span>9,475</span><span class="up">+1.07%</span></div><div class="row"><strong>ANTM</strong><span>3,180</span><span class="up">+3.25%</span></div><div class="row"><strong>BMRI</strong><span>5,875</span><span class="down">-0.34%</span></div></div>
+</div></div></div>
+</div></section>
+
+<section id="fitur"><div class="wrap"><div class="head"><div class="kicker">Yang sedang dibangun</div><h2>Satu tempat untuk membaca pasar.</h2><p>ANStock menggabungkan berbagai sudut pandang analisis agar pengguna tidak perlu berpindah-pindah hanya untuk memahami satu saham.</p></div>
+<div class="features">
+<article class="feature"><div class="num">01</div><h3>Market Overview</h3><p>IHSG, market breadth, volume, saham yang bergerak kuat, dan kondisi pasar secara menyeluruh.</p></article>
+<article class="feature"><div class="num">02</div><h3>Analisis Saham</h3><p>Price action, trend, volume, momentum, support-resistance, dan indikator teknikal.</p></article>
+<article class="feature"><div class="num">03</div><h3>Fundamental</h3><p>Pertumbuhan pendapatan, laba, arus kas, profitabilitas, utang, dan kualitas bisnis.</p></article>
+<article class="feature"><div class="num">04</div><h3>Valuasi</h3><p>PER, PBV, EV/EBITDA, historical valuation, dan perbandingan terhadap sektor.</p></article>
+<article class="feature"><div class="num">05</div><h3>Sector Intelligence</h3><p>Melihat kekuatan relatif sektor dan perubahan momentum sebelum masuk ke level emiten.</p></article>
+<article class="feature"><div class="num">06</div><h3>Screening</h3><p>Mencari saham berdasarkan kombinasi fundamental, teknikal, valuasi, momentum, dan volume.</p></article>
+</div></div></section>
+
+<section class="dark" id="analisis"><div class="wrap"><div class="head"><div class="kicker">Cara berpikir</div><h2>Data dulu. Konteks kemudian. Keputusan terakhir.</h2><p>ANStock tidak dibangun untuk sekadar menampilkan angka. Data perlu ditempatkan dalam konteks pasar agar lebih mudah dipahami.</p></div>
+<div class="process"><div class="step"><span>01</span><h3>Kumpulkan data</h3><p>Harga, volume, fundamental, sektor, makro, dan sumber data relevan.</p></div><div class="step"><span>02</span><h3>Validasi</h3><p>Periksa periode, timestamp, kelengkapan, corporate action, dan kualitas data.</p></div><div class="step"><span>03</span><h3>Analisis</h3><p>Hubungkan trend, valuasi, fundamental, flow, sektor, dan kondisi market.</p></div><div class="step"><span>04</span><h3>Rangkum</h3><p>Hasil analisis disajikan ringkas, jelas, dan dapat ditelusuri.</p></div></div></div></section>
+
+<section id="data"><div class="wrap"><div class="head"><div class="kicker">Data & research</div><h2>Lebih dari sekadar grafik harga.</h2><p>Arsitektur ANStock disiapkan agar dapat menggabungkan berbagai jenis data tanpa membuat pengguna kehilangan konteks.</p></div>
+<div class="data-grid">
+<article class="data"><h3>Market & Trading Data</h3><p>Fondasi untuk memahami pergerakan pasar dan saham secara real-time maupun historis.</p><div class="tags"><span class="tag">IHSG</span><span class="tag">OHLCV</span><span class="tag">Volume</span><span class="tag">Market Breadth</span><span class="tag">Sector</span><span class="tag">Foreign Flow</span></div></article>
+<article class="data"><h3>Fundamental & Corporate</h3><p>Riwayat perusahaan membantu melihat apakah perubahan harga didukung perubahan bisnis.</p><div class="tags"><span class="tag">Revenue</span><span class="tag">EPS</span><span class="tag">ROE</span><span class="tag">Cash Flow</span><span class="tag">Valuation</span><span class="tag">Corporate Action</span></div></article>
+<article class="data"><h3>Macro & Global Market</h3><p>Kondisi global dan ekonomi menjadi konteks penting bagi pergerakan aset berisiko.</p><div class="tags"><span class="tag">Interest Rate</span><span class="tag">Inflation</span><span class="tag">Bond Yield</span><span class="tag">USD/IDR</span><span class="tag">Commodity</span><span class="tag">Global Index</span></div></article>
+<article class="data"><h3>Historical Intelligence</h3><p>Melihat perubahan bisnis dan valuasi dalam rentang waktu yang lebih panjang.</p><div class="tags"><span class="tag">1 Tahun</span><span class="tag">3 Tahun</span><span class="tag">5 Tahun</span><span class="tag">Growth</span><span class="tag">Margin</span><span class="tag">Debt</span></div></article>
+</div></div></section>
+
+<section class="cta"><div class="wrap"><div class="cta-box"><div class="kicker">ANStock</div><h2>Pasar tidak sederhana. Cara membacanya juga tidak harus rumit.</h2><p>Platform ini sedang dibangun untuk menghadirkan analisis saham Indonesia yang lebih terstruktur, informatif, dan mudah dipahami.</p><div class="actions"><a class="btn primary" href="#fitur">Lihat perkembangan</a><a class="btn secondary" href="#tentang">Kembali ke atas</a></div></div></div></section>
+</main>
+<footer><div class="wrap foot"><div><strong>ANStock</strong> — Stock Intelligence Platform</div><div>Data dan analisis untuk tujuan informasi.</div></div></footer>
+<script>
+const m=document.querySelector('.menu'),l=document.querySelector('.links');
+m.addEventListener('click',()=>{const open=l.dataset.open==='1';l.dataset.open=open?'0':'1';l.style.display=open?'':'flex';if(!open){l.style.position='absolute';l.style.top='66px';l.style.left='14px';l.style.right='14px';l.style.padding='14px';l.style.background='#fff';l.style.border='1px solid #dfe6e1';l.style.borderRadius='12px';l.style.flexDirection='column';}});
+</script>
 </body>
 </html>
